@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment — KL Canteen</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background: #f4f6f9;
+  text-align: center;
+  color: #222;
+}
+
+/* HEADER */
+header {
+  background: #ef233c;
+  padding: 14px;
+  color: white;
+  font-size: 22px;
+  font-weight: 700;
+  position: sticky;
+  top: 0;
+}
+
+/* CONTENT */
+.container {
+  max-width: 500px;
+  margin: 30px auto;
+  background: white;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.amount-box {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #2b2d42;
+}
+
+.items-list {
+  font-size: 15px;
+  margin-bottom: 20px;
+  color: #444;
+}
+
+/* BUTTON */
+.pay-btn {
+  background: #2ecc71;
+  padding: 14px;
+  border: none;
+  width: 100%;
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+  border-radius: 12px;
+  cursor: pointer;
+  margin-top: 25px;
+}
+
+.pay-btn:hover {
+  transform: translateY(-3px);
+}
+
+.back-btn {
+  margin-top: 20px;
+  display: inline-block;
+  color: #ef233c;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 17px;
+}
+
+/* SUCCESS POPUP */
+#successPopup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 25px 35px;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  text-align: center;
+  display: none;
+  z-index: 200;
+}
+
+#successPopup h2 {
+  color: #2ecc71;
+  margin-bottom: 10px;
+}
+
+.overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  z-index: 100;
+}
+</style>
+</head>
+<body>
+
+<header>Payment</header>
+
+<div class="container">
+  <div class="amount-box" id="amountBox">Amount: ₹0</div>
+  <div class="items-list" id="itemsList">Items: -</div>
+
+  <button class="pay-btn" onclick="startUPIPayment()">Pay Using PhonePe</button>
+
+  <div class="back-btn" onclick="window.location.href='cart.html'">← Back to Cart</div>
+</div>
+
+<div class="overlay" id="overlay"></div>
+
+<div id="successPopup">
+  <h2>Payment Successful ✔</h2>
+  <p>Redirecting to receipt...</p>
+</div>
+
+<script>
+const total = localStorage.getItem("kl_canteen_total_v1") || 0;
+document.getElementById("amountBox").innerHTML = `Amount: ₹${total}`;
+
+const itemsJson = localStorage.getItem("kl_canteen_items_v1") || "[]";
+const items = JSON.parse(itemsJson);
+document.getElementById("itemsList").innerHTML = items.map(i =>
+   `${i.name} x${i.qty}`
+).join("<br>");
+
+function startUPIPayment() {
+    const upiId = "9346614809@ybl";
+    const upiName = "KL Canteen";
+
+    const paymentLink = `upi://pay?pa=${upiId}&pn=${upiName}&am=${total}&cu=INR&tn=KL%20Canteen%20Order`;
+
+    // OPEN PHONEPE
+    window.location.href = paymentLink;
+
+    // save order time for tracking
+    localStorage.setItem('klu_last_order_time', String(Date.now()));
+
+    // redirect to receipt automatically
+    setTimeout(() => {
+        document.getElementById("overlay").style.display = "block";
+        document.getElementById("successPopup").style.display = "block";
+
+        setTimeout(() => {
+            window.location.href = "receipt.html";
+        }, 2000);
+    }, 3000);
+}
+</script>
+
+</body>
+</html>

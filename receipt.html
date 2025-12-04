@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Receipt — KL Canteen</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background: #f7f7f7;
+  text-align: center;
+}
+
+header {
+  background: #ef233c;
+  padding: 14px;
+  color: white;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.container {
+  max-width: 550px;
+  margin: 25px auto;
+  background: white;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 5px;
+  border-bottom: 1px solid #eee;
+}
+
+.total {
+  font-size: 28px;
+  font-weight: 900;
+  margin-top: 18px;
+  color: #2b2d42;
+}
+
+.track-btn {
+  width: 100%;
+  background: #5e17eb;
+  color: white;
+  padding: 15px;
+  border-radius: 14px;
+  border: none;
+  font-size: 19px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.success {
+  font-size: 42px;
+  font-weight: 700;
+  color: #2ecc71;
+}
+</style>
+
+</head>
+<body>
+
+<header>Order Receipt</header>
+
+<div class="container">
+  <div class="success">✔ Payment Successful</div>
+
+  <h2>Thank you for your order! 🎉</h2>
+
+  <p><b>Name:</b> <span id="uName"></span></p>
+  <p><b>Roll No:</b> <span id="uRoll"></span></p>
+  <p><b>Order ID:</b> <span id="oCode">Loading...</span></p>
+  <p><b>Date & Time:</b> <span id="dateTime"></span></p>
+
+  <h3>Ordered Items</h3>
+  <div id="itemsList"></div>
+
+  <div class="total" id="totalAmount">Amount: ₹0</div>
+
+  
+  
+</div>
+
+<script>
+const STORAGE_USER = "kl_canteen_user_v1";
+const STORAGE_ITEMS = "kl_canteen_items_v1";
+const STORAGE_TOTAL = "kl_canteen_total_v1";
+const STORAGE_ORDER = "klu_last_order_id";
+
+// Set user info
+const user = JSON.parse(localStorage.getItem(STORAGE_USER) || "{}");
+document.getElementById("uName").innerText = user.name || "-";
+document.getElementById("uRoll").innerText = user.roll || "-";
+
+// Load items
+const items = JSON.parse(localStorage.getItem(STORAGE_ITEMS) || "[]");
+let itemsDiv = document.getElementById("itemsList");
+items.forEach(it => {
+  itemsDiv.innerHTML += `
+  <div class="item-row">
+    <span>${it.name} × ${it.qty}</span>
+    <span>₹${it.price * it.qty}</span>
+  </div>`;
+});
+
+// Total
+document.getElementById("totalAmount").innerHTML = "Amount: ₹" + (localStorage.getItem(STORAGE_TOTAL) || 0);
+
+// Order code saved from backend
+let code = localStorage.getItem(STORAGE_ORDER);
+if (!code) code = "Processing…";
+document.getElementById("oCode").innerText = code;
+
+// Date & Time
+document.getElementById("dateTime").innerText = new Date().toLocaleString();
+
+// Track
+
+
+</script>
+
+</body>
+</html>
